@@ -1,70 +1,211 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ground Truth — A Story of Earth's Surface Temperature</title>
-  <link rel="stylesheet" href="style.css" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ground Truth — A Story of Earth's Surface Temperature</title>
+<link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <header>
-    <h1>Ground Truth</h1>
-    <p class="subtitle">21 years of watching Earth's surface temperature from space.</p>
-    <p class="byline">DSC 106 Final Project · Spring 2026</p>
-  </header>
+<header>
+  <h1>Ground Truth</h1>
+  <p class="subtitle">21 years of watching Earth's surface temperature from space.</p>
+  <p class="byline">DSC 106 Final Project · Spring 2026</p>
+</header>
 
-  <main>
+<main>
 
-    <section class="intro">
-      <h2>What you're looking at</h2>
-      <p>You're looking at readings from Terra, a NASA Satellite that has been measuring the temperature of the Earth every month. Terra specifically measures the temperature of the ground itself; sand, rock, forest, canopy, ice, etc, which is different from the air temperature. This distinction is important because land surface temperature is what the planet is actually radiating. We can use it to predict weather, storms and evaporation, and see things that ground stations miss entirely, such as temperatures of remote stretches of deserts or even scorching parking lots where no one is keeping track of temperature.</p>
-    </section>
+  <!-- INTRO -->
+  <section class="intro">
+    <h2>What you're looking at</h2>
+    <p>You're looking at readings from Terra, a NASA satellite that has been measuring the temperature of the Earth every month. Terra specifically measures the temperature of the ground itself — sand, rock, forest, canopy, ice — which is different from air temperature. This distinction matters because land surface temperature is what the planet is actually radiating. We can use it to predict weather, storms, and evaporation, and see things that ground stations miss entirely: the temperatures of remote stretches of desert, or scorching parking lots where no one is keeping track.</p>
+  </section>
 
-    <section class="viz-section">
-      <div class="map-container">
-        <canvas id="heatmap" width="900" height="450"></canvas>
-        <div id="tooltip" class="tooltip"></div>
+  <!-- MAIN MAP -->
+  <section class="viz-section">
+    <h2 class="section-title">Explore the Map</h2>
+    <p class="section-desc">Select a time period to load global land surface temperature data. Hover anywhere on the map to read exact temperatures.</p>
+
+    <div class="controls">
+      <button class="year-btn active" data-key="jul2020">July 2020</button>
+      <button class="year-btn" data-key="jan2020">January 2020</button>
+      <button class="year-btn" data-key="jul2003">July 2003</button>
+      <button class="year-btn" data-key="jul2024">July 2024</button>
+    </div>
+
+    <div class="map-container">
+      <canvas id="heatmap" width="900" height="450"></canvas>
+      <div id="tooltip" class="tooltip"></div>
+      <!-- Event marker popups rendered here by JS -->
+      <div id="event-popup" class="event-popup hidden"></div>
+    </div>
+
+    <div class="legend">
+      <span class="legend-label">−25°C</span>
+      <div class="legend-bar"></div>
+      <span class="legend-label">+50°C</span>
+    </div>
+    <p class="caption">Land surface temperature measured by NASA's Terra satellite (MODIS MOD11C3, 5 km resolution). Ocean and sensor-error pixels masked.</p>
+  </section>
+
+  <!-- EXTREME EVENTS -->
+  <section class="viz-section events-section">
+    <h2 class="section-title">When the Earth Burned</h2>
+    <p class="section-desc">Click any event below to jump to that time period and see the heat signature that corresponded with real human suffering. These aren't abstractions — every spike in temperature represents lives disrupted, displaced, or lost.</p>
+
+    <div class="events-grid" id="events-grid">
+      <!-- Populated by JS -->
+    </div>
+
+    <div class="map-container" style="margin-top: 20px;">
+      <canvas id="event-map" width="900" height="450"></canvas>
+      <div id="event-tooltip" class="tooltip"></div>
+      <div id="event-markers-layer" class="markers-layer"></div>
+    </div>
+    <div class="legend">
+      <span class="legend-label">−25°C</span>
+      <div class="legend-bar"></div>
+      <span class="legend-label">+50°C</span>
+    </div>
+    <p class="caption" id="event-map-caption">Select an event above to highlight it on the map.</p>
+  </section>
+
+  <!-- SIDE-BY-SIDE COMPARISON -->
+  <section class="viz-section compare-section">
+    <h2 class="section-title">Compare Side by Side</h2>
+    <p class="section-desc">Load two time periods simultaneously and hover over either map — both will highlight the same location so you can directly compare temperatures across time.</p>
+
+    <div class="split-controls">
+      <div class="split-control-group">
+        <label for="left-select">Left map</label>
+        <select id="left-select">
+          <option value="jul2003">July 2003</option>
+          <option value="jan2020">January 2020</option>
+          <option value="jul2020" selected>July 2020</option>
+          <option value="jul2024">July 2024</option>
+        </select>
       </div>
-
-      <div class="controls">
-        <button class="year-btn active" data-key="jul2020">July 2020</button>
-        <button class="year-btn" data-key="jan2020">January 2020</button>
-        <button class="year-btn" data-key="jul2003">July 2003</button>
-        <button class="year-btn" data-key="jul2024">July 2024</button>
+      <div class="split-vs">VS</div>
+      <div class="split-control-group">
+        <label for="right-select">Right map</label>
+        <select id="right-select">
+          <option value="jul2003">July 2003</option>
+          <option value="jan2020">January 2020</option>
+          <option value="jul2020">July 2020</option>
+          <option value="jul2024" selected>July 2024</option>
+        </select>
       </div>
+    </div>
 
-      <div class="legend">
-        <span class="legend-label">-25°C</span>
-        <div class="legend-bar"></div>
-        <span class="legend-label">+50°C</span>
+    <div class="split-container">
+      <div class="split-panel">
+        <div class="split-label" id="left-label">July 2020</div>
+        <div class="map-container">
+          <canvas id="map-left" width="900" height="450"></canvas>
+          <div id="crosshair-left" class="crosshair hidden"></div>
+        </div>
       </div>
+      <div class="split-panel">
+        <div class="split-label" id="right-label">July 2024</div>
+        <div class="map-container">
+          <canvas id="map-right" width="900" height="450"></canvas>
+          <div id="crosshair-right" class="crosshair hidden"></div>
+        </div>
+      </div>
+    </div>
 
-      <p class="caption">caption</p>
+    <div id="compare-tooltip" class="compare-tooltip hidden">
+      <div class="compare-tooltip-inner">
+        <div class="cmp-side">
+          <span class="cmp-period" id="cmp-left-period"></span>
+          <span class="cmp-temp" id="cmp-left-temp"></span>
+        </div>
+        <div class="cmp-divider"></div>
+        <div class="cmp-side">
+          <span class="cmp-period" id="cmp-right-period"></span>
+          <span class="cmp-temp" id="cmp-right-temp"></span>
+        </div>
+      </div>
+      <div class="cmp-coords" id="cmp-coords"></div>
+    </div>
 
-      <h3 style="margin-top:32px;margin-bottom:12px;">Interactive Globe</h3>
-      <div id="globe-container"></div>
-      <p class="caption" style="text-align:center;margin-top:8px;">Click and drag to rotate. Scroll to zoom.</p>
-    </section>
+    <div class="legend">
+      <span class="legend-label">−25°C</span>
+      <div class="legend-bar"></div>
+      <span class="legend-label">+50°C</span>
+    </div>
+  </section>
 
-    <section class="writeup">
-      <h2>Project Writeup</h2>
+  <!-- ANOMALY MAP -->
+  <section class="viz-section anomaly-section">
+    <h2 class="section-title">How Much Has It Changed?</h2>
+    <p class="section-desc">The anomaly map shows the <em>difference</em> in temperature between two time periods — red means warmer, blue means cooler. This removes the seasonal baseline and reveals where the planet has actually shifted.</p>
 
-      <h3>What we've done so far</h3>
-      <p>We used NASA's MODIS MOD11C3 dataset on monthly land surface temperature with 5km resolution and converted raw values to Celsius and masked invalid pixels such as zeros, oceans, and sensor errors as NaN. We then reduced the size of the dataset from 26 million cells to 400,000 cells, and converted NaN values to JSON. We then pulled 4 time periods: July 2020, January 2020, July 2003, July 2024, and built an HTML5 canvas renderer with a blue to red color scale and added a temperature legend. Finally, we added two working interactions; the button to switch between different time periods, and a hover tooltip with temperature and coordinates.</p>
+    <div class="anomaly-controls">
+      <div class="anomaly-control-group">
+        <label for="anomaly-base">Baseline (subtract)</label>
+        <select id="anomaly-base">
+          <option value="jul2003" selected>July 2003</option>
+          <option value="jan2020">January 2020</option>
+          <option value="jul2020">July 2020</option>
+          <option value="jul2024">July 2024</option>
+        </select>
+      </div>
+      <div class="anomaly-arrow">→</div>
+      <div class="anomaly-control-group">
+        <label for="anomaly-compare">Compare to</label>
+        <select id="anomaly-compare">
+          <option value="jul2003">July 2003</option>
+          <option value="jan2020">January 2020</option>
+          <option value="jul2020">July 2020</option>
+          <option value="jul2024" selected>July 2024</option>
+        </select>
+      </div>
+      <button id="anomaly-btn" class="anomaly-btn">Show Anomaly</button>
+    </div>
 
-      <h3>What will be the most challenging part to design</h3>
-      <p>We anticipate the most challenging part of this project will be turning a map with buttons into a real explorable explanation with a narrative driving the visualizations, instead of the visualizations driving the narrative. We also anticipate that writing substantial explanatory text to properly explain the changes and capture the reader's attention will be something that is also difficult. Additionally, we need to decide if we want to add more years, anomaly maps, and be careful of our framing while doing it. As tough as the data is here, we also need to make sure our design matches the narrative we are trying to display.</p>
-    </section>
+    <div class="map-container">
+      <canvas id="anomaly-map" width="900" height="450"></canvas>
+      <div id="anomaly-tooltip" class="tooltip"></div>
+      <div id="anomaly-placeholder" class="anomaly-placeholder">
+        <p>Select two time periods above and click <strong>Show Anomaly</strong></p>
+      </div>
+    </div>
 
-  </main>
+    <div class="anomaly-legend">
+      <span class="legend-label">−15°C cooler</span>
+      <div class="anomaly-legend-bar"></div>
+      <span class="legend-label">+15°C warmer</span>
+    </div>
+    <p class="caption" id="anomaly-caption"></p>
+  </section>
 
-  <footer>
-    <p>footer</p>
-  </footer>
+  <!-- GLOBE -->
+  <section class="viz-section globe-section">
+    <h2 class="section-title">A View From Space</h2>
+    <p class="section-desc">The same data, projected onto a rotating globe. Drag to rotate, scroll to zoom.</p>
+    <div id="globe-container"></div>
+    <p class="caption" style="text-align:center;margin-top:8px;">Click and drag to rotate · Scroll to zoom</p>
+  </section>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="globe.js"></script>
-  <script src="script.js"></script>
+  <!-- WRITEUP -->
+  <section class="writeup">
+    <h2>Project Writeup</h2>
+    <h3>What we've done so far</h3>
+    <p>We used NASA's MODIS MOD11C3 dataset on monthly land surface temperature with 5km resolution and converted raw values to Celsius and masked invalid pixels such as zeros, oceans, and sensor errors as NaN. We then reduced the size of the dataset from 26 million cells to 400,000 cells, and converted NaN values to JSON. We then pulled 4 time periods: July 2020, January 2020, July 2003, July 2024, and built an HTML5 canvas renderer with a blue to red color scale and added a temperature legend. Finally, we added two working interactions: the button to switch between different time periods, and a hover tooltip with temperature and coordinates.</p>
+    <h3>What will be the most challenging part to design</h3>
+    <p>We anticipate the most challenging part of this project will be turning a map with buttons into a real explorable explanation with a narrative driving the visualizations, instead of the visualizations driving the narrative. We also anticipate that writing substantial explanatory text to properly explain the changes and capture the reader's attention will be something that is also difficult. Additionally, we need to decide if we want to add more years, anomaly maps, and be careful of our framing while doing it. As tough as the data is here, we also need to make sure our design matches the narrative we are trying to display.</p>
+  </section>
+
+</main>
+
+<footer>
+  <p>Data: NASA MODIS MOD11C3 · Built for DSC 106 · Spring 2026</p>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="globe.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
