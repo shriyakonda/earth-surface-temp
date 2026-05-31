@@ -209,3 +209,15 @@ footer p {
   color: #666;
   white-space: nowrap;
 }
+
+#globe-container {
+  width: 100%;
+  height: 500px;
+  background: #000;
+  border-radius: 4px;
+  cursor: grab;
+}
+
+#globe-container:active {
+  cursor: grabbing;
+}
