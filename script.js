@@ -82,8 +82,8 @@ function tempToColor(t) {
     g = Math.round(245 + (4   - 245) * f);
     b = Math.round(245 + (38  - 245) * f);
   }
-  return [r, g, b];  // ← array, not string
-}        // ← closes the function  (this was missing)
+  return [r, g, b];
+}
 
 function anomalyToColor(delta) {
   if (delta === null || isNaN(delta)) return null;
@@ -91,13 +91,11 @@ function anomalyToColor(delta) {
   const x = Math.max(-1, Math.min(1, delta / range));
   let r, g, b;
   if (x < 0) {
-    // cooler: white -> blue
     const f = -x;
     r = Math.round(255 + (30  - 255) * f);
     g = Math.round(255 + (100 - 255) * f);
     b = Math.round(255 + (200 - 255) * f);
   } else {
-    // warmer: white -> red
     const f = x;
     r = Math.round(255 + (200 - 255) * f);
     g = Math.round(255 + (30  - 255) * f);
@@ -116,16 +114,12 @@ function drawGridToCanvas(canvas, grid, colorFn) {
   const imageData = ctx.createImageData(canvas.width, canvas.height);
   const data = imageData.data;
 
-  ctx.fillStyle = '#0a0a2a';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
       const val = grid[r][c];
       const color = colorFn(val);
       if (!color) continue;
 
-      // Map grid cell to canvas pixels
       const x0 = Math.floor((c / cols) * canvas.width);
       const x1 = Math.floor(((c + 1) / cols) * canvas.width);
       const y0 = Math.floor((r / rows) * canvas.height);
@@ -170,10 +164,8 @@ function latLonToCanvasXY(lat, lon, canvas, rows, cols) {
 }
 
 function canvasXYToLatLon(px, py, canvas, rows, cols) {
-  const c = (px / canvas.width) * cols;
-  const r = (py / canvas.height) * rows;
-  const lon = (c / cols) * 360 - 180;
-  const lat = 90 - (r / rows) * 180;
+  const lon = (px / canvas.width) * 360 - 180;
+  const lat = 90 - (py / canvas.height) * 180;
   return { lat, lon };
 }
 
@@ -187,10 +179,9 @@ function canvasXYToGridVal(px, py, canvas, grid) {
 }
 
 // ============================================================
-// SECTION 1: MAIN MAP
+// SECTION 1: MAIN MAP (no event markers)
 // ============================================================
 const mainCanvas = document.getElementById('heatmap');
-const mainCtx = mainCanvas.getContext('2d');
 const mainTooltip = document.getElementById('tooltip');
 const mainButtons = document.querySelectorAll('.year-btn');
 let currentGrid = null;
@@ -200,41 +191,17 @@ async function switchMainMap(key) {
   currentKey = key;
   const grid = await loadDataset(key);
   currentGrid = grid;
-  drawGridToCanvas(mainCanvas, grid, (t) => {
-    const c = tempToColor(t);
-    return c;
-  });
-  // Re-draw event markers on top if events section is active
-  drawMainEventMarkers();
-}
-
-function drawMainEventMarkers() {
-  // draw subtle pulse markers on main map for events matching current period
-  const ctx = mainCtx;
-  EVENTS.forEach(ev => {
-    if (ev.dataKey !== currentKey) return;
-    const { x, y } = latLonToCanvasXY(
-      ev.markerLat, ev.markerLon, mainCanvas,
-      currentGrid ? currentGrid.length : 360,
-      currentGrid ? currentGrid[0].length : 720
-    );
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(x, y, 8, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(255,255,255,0.9)';
-    ctx.fill();
-    ctx.strokeStyle = ev.color;
-    ctx.lineWidth = 3;
-    ctx.stroke();
-    ctx.restore();
-  });
+  // Draw map only — no event markers on main map
+  drawGridToCanvas(mainCanvas, grid, tempToColor);
+  // Notify globe to update
+  if (typeof globeSwitchDataset === 'function') globeSwitchDataset(key);
 }
 
 mainCanvas.addEventListener('mousemove', (e) => {
   if (!currentGrid) return;
   const rect = mainCanvas.getBoundingClientRect();
   const px = (e.clientX - rect.left) * (mainCanvas.width / rect.width);
-  const py = (e.clientY - rect.top) * (mainCanvas.height / rect.height);
+  const py = (e.clientY - rect.top)  * (mainCanvas.height / rect.height);
   const val = canvasXYToGridVal(px, py, mainCanvas, currentGrid);
   const { lat, lon } = canvasXYToLatLon(px, py, mainCanvas, currentGrid.length, currentGrid[0].length);
 
@@ -263,14 +230,13 @@ switchMainMap('jul2020');
 // ============================================================
 // SECTION 2: EXTREME EVENT MARKERS
 // ============================================================
-const eventCanvas = document.getElementById('event-map');
+const eventCanvas  = document.getElementById('event-map');
 const eventTooltip = document.getElementById('event-tooltip');
-const eventsGrid = document.getElementById('events-grid');
+const eventsGrid   = document.getElementById('events-grid');
 const eventCaption = document.getElementById('event-map-caption');
 let activeEventKey = null;
 let eventGrid = null;
 
-// Build event cards
 EVENTS.forEach(ev => {
   const card = document.createElement('div');
   card.className = 'event-card';
@@ -288,20 +254,17 @@ EVENTS.forEach(ev => {
 });
 
 async function selectEvent(ev) {
-  // Highlight card
   document.querySelectorAll('.event-card').forEach(c => c.classList.remove('active'));
   document.querySelector(`.event-card[data-id="${ev.id}"]`).classList.add('active');
 
-  // Load data + draw
   const grid = await loadDataset(ev.dataKey);
   eventGrid = grid;
   activeEventKey = ev.dataKey;
 
-  drawGridToCanvas(eventCanvas, grid, (t) => tempToColor(t));
+  drawGridToCanvas(eventCanvas, grid, tempToColor);
   drawEventMarkers(ev);
 
-  // Update caption
-  eventCaption.innerHTML = `<strong>${ev.title}</strong> — ${ev.date}. Showing ${LABELS[ev.dataKey]}. ${ev.description}`;
+  eventCaption.innerHTML = `<strong>${ev.title}</strong> — ${ev.date}. ${ev.description}`;
   eventCaption.style.borderLeft = `3px solid ${ev.color}`;
   eventCaption.style.paddingLeft = '12px';
   eventCaption.style.marginTop = '10px';
@@ -318,7 +281,6 @@ function drawEventMarkers(activeEvent) {
     const isActive = ev.id === activeEvent.id;
 
     ctx.save();
-    // Outer ring
     ctx.beginPath();
     ctx.arc(x, y, isActive ? 16 : 10, 0, Math.PI * 2);
     ctx.strokeStyle = ev.color;
@@ -326,7 +288,6 @@ function drawEventMarkers(activeEvent) {
     ctx.globalAlpha = isActive ? 0.6 : 0.4;
     ctx.stroke();
 
-    // Inner dot
     ctx.beginPath();
     ctx.arc(x, y, isActive ? 7 : 5, 0, Math.PI * 2);
     ctx.fillStyle = isActive ? '#fff' : ev.color;
@@ -355,26 +316,25 @@ eventCanvas.addEventListener('mousemove', (e) => {
 });
 eventCanvas.addEventListener('mouseleave', () => { eventTooltip.style.opacity = 0; });
 
-// Auto-select first event
 selectEvent(EVENTS[0]);
 
 // ============================================================
 // SECTION 3: SIDE-BY-SIDE COMPARISON
 // ============================================================
-const leftCanvas  = document.getElementById('map-left');
-const rightCanvas = document.getElementById('map-right');
-const leftSelect  = document.getElementById('left-select');
-const rightSelect = document.getElementById('right-select');
-const leftLabel   = document.getElementById('left-label');
-const rightLabel  = document.getElementById('right-label');
-const compareTooltip    = document.getElementById('compare-tooltip');
-const cmpLeftPeriod     = document.getElementById('cmp-left-period');
-const cmpRightPeriod    = document.getElementById('cmp-right-period');
-const cmpLeftTemp       = document.getElementById('cmp-left-temp');
-const cmpRightTemp      = document.getElementById('cmp-right-temp');
-const cmpCoords         = document.getElementById('cmp-coords');
-const crosshairLeft     = document.getElementById('crosshair-left');
-const crosshairRight    = document.getElementById('crosshair-right');
+const leftCanvas     = document.getElementById('map-left');
+const rightCanvas    = document.getElementById('map-right');
+const leftSelect     = document.getElementById('left-select');
+const rightSelect    = document.getElementById('right-select');
+const leftLabel      = document.getElementById('left-label');
+const rightLabel     = document.getElementById('right-label');
+const compareTooltip = document.getElementById('compare-tooltip');
+const cmpLeftPeriod  = document.getElementById('cmp-left-period');
+const cmpRightPeriod = document.getElementById('cmp-right-period');
+const cmpLeftTemp    = document.getElementById('cmp-left-temp');
+const cmpRightTemp   = document.getElementById('cmp-right-temp');
+const cmpCoords      = document.getElementById('cmp-coords');
+const crosshairLeft  = document.getElementById('crosshair-left');
+const crosshairRight = document.getElementById('crosshair-right');
 
 let leftGrid  = null;
 let rightGrid = null;
@@ -384,34 +344,27 @@ async function loadCompareMap(side, key) {
   if (side === 'left') {
     leftGrid = grid;
     leftLabel.textContent = LABELS[key];
-    drawGridToCanvas(leftCanvas, grid, (t) => tempToColor(t));
+    drawGridToCanvas(leftCanvas, grid, tempToColor);
   } else {
     rightGrid = grid;
     rightLabel.textContent = LABELS[key];
-    drawGridToCanvas(rightCanvas, grid, (t) => tempToColor(t));
+    drawGridToCanvas(rightCanvas, grid, tempToColor);
   }
 }
 
-function syncedHover(e, sourceCanvas, sourceGrid, otherCanvas, otherGrid) {
-  if (!sourceGrid || !otherGrid) return;
+function syncedHover(e, sourceCanvas, sourceGrid) {
+  if (!sourceGrid || !leftGrid || !rightGrid) return;
   const rect = sourceCanvas.getBoundingClientRect();
   const px = (e.clientX - rect.left) * (sourceCanvas.width / rect.width);
   const py = (e.clientY - rect.top)  * (sourceCanvas.height / rect.height);
 
-  // Fraction position (0-1)
   const fx = px / sourceCanvas.width;
   const fy = py / sourceCanvas.height;
 
   const leftVal  = canvasXYToGridVal(fx * leftCanvas.width,  fy * leftCanvas.height,  leftCanvas,  leftGrid);
   const rightVal = canvasXYToGridVal(fx * rightCanvas.width, fy * rightCanvas.height, rightCanvas, rightGrid);
 
-  const rows = sourceGrid.length;
-  const cols = sourceGrid[0].length;
-  const { lat, lon } = canvasXYToLatLon(px, py, sourceCanvas, rows, cols);
-
-  // Position crosshairs on both canvases
-  const leftRect  = leftCanvas.getBoundingClientRect();
-  const rightRect = rightCanvas.getBoundingClientRect();
+  const { lat, lon } = canvasXYToLatLon(px, py, sourceCanvas, sourceGrid.length, sourceGrid[0].length);
 
   crosshairLeft.style.left = (fx * 100) + '%';
   crosshairLeft.style.top  = (fy * 100) + '%';
@@ -421,14 +374,12 @@ function syncedHover(e, sourceCanvas, sourceGrid, otherCanvas, otherGrid) {
   crosshairRight.style.top  = (fy * 100) + '%';
   crosshairRight.classList.remove('hidden');
 
-  // Shared tooltip
   cmpLeftPeriod.textContent  = leftLabel.textContent;
   cmpRightPeriod.textContent = rightLabel.textContent;
   cmpLeftTemp.textContent    = leftVal  !== null && !isNaN(leftVal)  ? leftVal.toFixed(1)  + ' °C' : 'No data';
   cmpRightTemp.textContent   = rightVal !== null && !isNaN(rightVal) ? rightVal.toFixed(1) + ' °C' : 'No data';
   cmpCoords.textContent      = `${lat.toFixed(1)}°, ${lon.toFixed(1)}°`;
 
-  // Show delta color hint
   if (leftVal !== null && rightVal !== null && !isNaN(leftVal) && !isNaN(rightVal)) {
     const delta = rightVal - leftVal;
     cmpRightTemp.style.color = delta > 0 ? '#ff4444' : delta < 0 ? '#4488ff' : '#ccc';
@@ -444,15 +395,14 @@ function clearSyncedHover() {
   compareTooltip.classList.add('hidden');
 }
 
-leftCanvas.addEventListener('mousemove',  (e) => syncedHover(e, leftCanvas,  leftGrid,  rightCanvas, rightGrid));
-rightCanvas.addEventListener('mousemove', (e) => syncedHover(e, rightCanvas, rightGrid, leftCanvas,  leftGrid));
+leftCanvas.addEventListener('mousemove',  (e) => syncedHover(e, leftCanvas,  leftGrid));
+rightCanvas.addEventListener('mousemove', (e) => syncedHover(e, rightCanvas, rightGrid));
 leftCanvas.addEventListener('mouseleave',  clearSyncedHover);
 rightCanvas.addEventListener('mouseleave', clearSyncedHover);
 
 leftSelect.addEventListener('change',  () => loadCompareMap('left',  leftSelect.value));
 rightSelect.addEventListener('change', () => loadCompareMap('right', rightSelect.value));
 
-// Initial load
 loadCompareMap('left',  'jul2020');
 loadCompareMap('right', 'jul2024');
 
@@ -469,7 +419,6 @@ const anomalyPlaceholder = document.getElementById('anomaly-placeholder');
 let anomalyGrid = null;
 
 function computeAnomaly(gridA, gridB) {
-  // Returns gridA - gridB (compare minus base)
   return gridA.map((row, r) =>
     row.map((val, c) => {
       const base = gridB[r] && gridB[r][c];
@@ -495,9 +444,9 @@ anomalyBtn.addEventListener('click', async () => {
   anomalyGrid = computeAnomaly(cmpGrid, baseGrid);
 
   anomalyPlaceholder.style.display = 'none';
-  drawGridToCanvas(anomalyCanvas, anomalyGrid, (d) => anomalyToColor(d));
+  drawGridToCanvas(anomalyCanvas, anomalyGrid, anomalyToColor);
 
-  anomalyCaption.textContent = `Showing ${LABELS[cmpKey]} minus ${LABELS[baseKey]}. Red = warmer in ${LABELS[cmpKey]}, Blue = cooler.`;
+  anomalyCaption.textContent = `Showing ${LABELS[cmpKey]} minus ${LABELS[baseKey]}. Red = warmer, Blue = cooler.`;
   anomalyBtn.textContent = 'Show Anomaly';
   anomalyBtn.disabled = false;
 });
