@@ -294,9 +294,11 @@ async function initGlobe() {
 
   function resetView() {
     targetZoom = 2.8;
+    targetRotX = 0;
+    rotX = 0;
     autoRotate = true;
     isZoomed = false;
-    animating = true;
+    animating = false;
     hideStatsPanel();
     globeTooltip.style.display = 'none';
   }
