@@ -186,7 +186,7 @@ async function initGlobe() {
 
     document.getElementById('sp-title').textContent  = roughRegionName(lat, lon);
     document.getElementById('sp-coords').textContent = `${lat.toFixed(1)}°, ${lon.toFixed(1)}° · ${LABELS_MAP[currentKey]}`;
-    document.getElementById('sp-temp').textContent   = val !== null && !isNaN(val) ? `${val.toFixed(1)} °C` : 'No data';
+    document.getElementById('sp-temp').textContent   = val !== null && !isNaN(val) ? `${val.toFixed(1)} °C` : 'Ocean or masked pixel';
     document.getElementById('sp-temp').style.color   = val !== null && !isNaN(val) ? tempToHex(val) : '#777';
     document.getElementById('sp-avg').textContent    = count > 0 ? `${avg} °C` : 'No data';
     document.getElementById('sp-range').textContent  = range;
@@ -206,19 +206,51 @@ async function initGlobe() {
   function hideStatsPanel() { statsPanel.style.transform = 'translateX(260px)'; }
 
   function roughRegionName(lat, lon) {
-    if (lat > 60  && lon > 30  && lon < 180)  return "Siberia / Arctic";
-    if (lat > 60)                              return "Northern Canada / Arctic";
-    if (lat > 35  && lon > -15 && lon < 40)   return "Europe";
-    if (lat > 20  && lon > 40  && lon < 60)   return "Middle East";
-    if (lat > 5   && lon > 60  && lon < 90)   return "South Asia";
-    if (lat > 15  && lon > 90  && lon < 145)  return "East Asia / Southeast Asia";
-    if (lat > 15  && lon > 145 && lon < 180)  return "East Asia / Pacific";
-    if (lat > 25  && lon > -130 && lon < -60) return "North America";
-    if (lat > -5  && lat < 25  && lon > -85  && lon < -35) return "Central America / Caribbean";
-    if (lat < -5  && lon > -85  && lon < -35) return "South America";
-    if (lat > -40 && lat < 38  && lon > -20 && lon < 52)  return "Africa";
-    if (lat < -10 && lon > 110 && lon < 155) return "Australia";
-    if (lat > 30  && lon > 60  && lon < 90)  return "Central Asia";
+    // Arctic / Greenland
+    if (lat > 70)  return lon > -60 && lon < 30 ? "Greenland" : lon > 30 ? "Siberian Arctic" : "Canadian Arctic";
+    // Russia / Siberia
+    if (lat > 50 && lon > 30 && lon < 180)  return "Russia / Siberia";
+    // Canada / Alaska
+    if (lat > 50 && lon > -170 && lon < -50) return "Canada / Alaska";
+    // Europe
+    if (lat > 35 && lat < 72 && lon > -12 && lon < 40) return "Europe";
+    // North America
+    if (lat > 15 && lat < 55 && lon > -130 && lon < -60) return "North America";
+    // Central America
+    if (lat > 5 && lat < 25 && lon > -95 && lon < -60) return "Central America";
+    // Caribbean
+    if (lat > 10 && lat < 28 && lon > -85 && lon < -55) return "Caribbean";
+    // South America
+    if (lon > -85 && lon < -32 && lat < 15) return "South America";
+    // North Africa / Sahara
+    if (lat > 15 && lat < 38 && lon > -18 && lon < 40) return "North Africa";
+    // West Africa
+    if (lat > -5 && lat < 20 && lon > -18 && lon < 15) return "West Africa";
+    // East Africa / Horn
+    if (lat > -15 && lat < 20 && lon > 32 && lon < 52) return "East Africa";
+    // Central Africa
+    if (lat > -15 && lat < 10 && lon > 10 && lon < 32) return "Central Africa";
+    // Southern Africa
+    if (lat < -15 && lon > 10 && lon < 42) return "Southern Africa";
+    // Middle East
+    if (lat > 12 && lat < 40 && lon > 32 && lon < 60) return "Middle East";
+    // Central Asia
+    if (lat > 35 && lat < 55 && lon > 50 && lon < 80) return "Central Asia";
+    // South Asia
+    if (lat > 5 && lat < 38 && lon > 60 && lon < 92) return "South Asia";
+    // Southeast Asia
+    if (lat > -12 && lat < 28 && lon > 92 && lon < 142) return "Southeast Asia";
+    // East Asia
+    if (lat > 18 && lat < 55 && lon > 100 && lon < 148) return "East Asia";
+    // Japan / Korea
+    if (lat > 30 && lat < 48 && lon > 128 && lon < 148) return "Japan / Korea";
+    // Australia
+    if (lat < -10 && lat > -45 && lon > 110 && lon < 155) return "Australia";
+    // New Zealand
+    if (lat < -30 && lon > 165 && lon < 180) return "New Zealand";
+    // Pacific Islands
+    if (lon > 140 || lon < -130) return "Pacific Ocean region";
+    // Fallback to coordinates
     return `${Math.abs(lat).toFixed(0)}°${lat>=0?"N":"S"}, ${Math.abs(lon).toFixed(0)}°${lon>=0?"E":"W"}`;
   }
 
