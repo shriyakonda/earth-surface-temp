@@ -312,15 +312,15 @@ async function initGlobe() {
   // Convert a world-space point ON the globe surface to lat/lon.
   // Since the globe rotates, we convert to globe local space first.
   function hitToLatLon(hit) {
-  const local = globe.worldToLocal(hit.point.clone());
-  console.log('local x:', local.x.toFixed(3), 'y:', local.y.toFixed(3), 'z:', local.z.toFixed(3));
-  const len = local.length();
-  const lat = 90 - Math.acos(Math.max(-1, Math.min(1, local.y / len))) * (180 / Math.PI);
-  const theta = Math.PI - Math.atan2(local.z, local.x);
-  const lon = ((theta * (180 / Math.PI)) - 180 + 360) % 360 - 180;
-  console.log('computed lat:', lat.toFixed(1), 'lon:', lon.toFixed(1));
-  return { lat, lon };
-}
+    const local = globe.worldToLocal(hit.point.clone());
+    const len = local.length();
+    const lat = 90 - Math.acos(Math.max(-1, Math.min(1, local.y / len))) * (180 / Math.PI);
+    // Verified formula: latLonToVec3 sets x=-sin(phi)*cos(theta), z=sin(phi)*sin(theta)
+    // Inverse: theta = atan2(z, -x), lon = theta*(180/PI) - 180
+    const theta = Math.atan2(local.z, -local.x);
+    const lon = theta * (180 / Math.PI) - 180;
+    return { lat, lon };
+  }
 
   function latLonToGridVal(lat, lon) {
     const grid = currentGridRef;
