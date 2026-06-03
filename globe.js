@@ -314,12 +314,12 @@ async function initGlobe() {
   function hitToLatLon(hit) {
     const local = globe.worldToLocal(hit.point.clone());
     const len = local.length();
-    // lat: straightforward from y component
     const lat = 90 - Math.acos(Math.max(-1, Math.min(1, local.y / len))) * (180 / Math.PI);
-    // lon: must match latLonToVec3 which uses x=-sin(phi)*cos(theta), z=sin(phi)*sin(theta)
-    // so theta = atan2(z, -x), and lon = theta*(180/PI) - 180
-    const theta = Math.atan2(local.z, -local.x);
-    const lon = (theta * (180 / Math.PI) - 180 + 360) % 360 - 180;
+    // latLonToVec3 sets: x = -sin(phi)*cos(theta), z = sin(phi)*sin(theta)
+    // where theta = (lon+180)*PI/180
+    // Inverting: theta = PI - atan2(z, x), lon = theta*(180/PI) - 180
+    const theta = Math.PI - Math.atan2(local.z, local.x);
+    const lon = ((theta * (180 / Math.PI)) - 180 + 360) % 360 - 180;
     return { lat, lon };
   }
 
