@@ -206,16 +206,20 @@ async function initGlobe() {
   function hideStatsPanel() { statsPanel.style.transform = 'translateX(260px)'; }
 
   function roughRegionName(lat, lon) {
-    if (lat > 60)  return lon > 30 && lon < 180 ? 'Siberia / Arctic' : 'Northern Canada / Arctic';
-    if (lat > 35 && lon > -15 && lon < 40)  return 'Europe';
-    if (lat > 20 && lon > 40  && lon < 75)  return 'Middle East';
-    if (lat > 5  && lon > 65  && lon < 100) return 'South Asia';
-    if (lat > 15 && lon > 100 && lon < 145) return 'East Asia';
-    if (lat > 25 && lon > -130 && lon < -60) return 'North America';
-    if (lat < 0  && lon > -85  && lon < -35) return 'South America';
-    if (lat > -40 && lat < 40 && lon > -20 && lon < 55) return 'Africa';
-    if (lat < -10 && lon > 110 && lon < 155) return 'Australia';
-    return `${Math.abs(lat).toFixed(0)}°${lat>=0?'N':'S'}, ${Math.abs(lon).toFixed(0)}°${lon>=0?'E':'W'}`;
+    if (lat > 60  && lon > 30  && lon < 180)  return "Siberia / Arctic";
+    if (lat > 60)                              return "Northern Canada / Arctic";
+    if (lat > 35  && lon > -15 && lon < 40)   return "Europe";
+    if (lat > 20  && lon > 40  && lon < 60)   return "Middle East";
+    if (lat > 5   && lon > 60  && lon < 90)   return "South Asia";
+    if (lat > 15  && lon > 90  && lon < 145)  return "East Asia / Southeast Asia";
+    if (lat > 15  && lon > 145 && lon < 180)  return "East Asia / Pacific";
+    if (lat > 25  && lon > -130 && lon < -60) return "North America";
+    if (lat > -5  && lat < 25  && lon > -85  && lon < -35) return "Central America / Caribbean";
+    if (lat < -5  && lon > -85  && lon < -35) return "South America";
+    if (lat > -40 && lat < 38  && lon > -20 && lon < 52)  return "Africa";
+    if (lat < -10 && lon > 110 && lon < 155) return "Australia";
+    if (lat > 30  && lon > 60  && lon < 90)  return "Central Asia";
+    return `${Math.abs(lat).toFixed(0)}°${lat>=0?"N":"S"}, ${Math.abs(lon).toFixed(0)}°${lon>=0?"E":"W"}`;
   }
 
   function tempToHex(t) {
@@ -310,8 +314,12 @@ async function initGlobe() {
   function hitToLatLon(hit) {
     const local = globe.worldToLocal(hit.point.clone());
     const len = local.length();
+    // lat: straightforward from y component
     const lat = 90 - Math.acos(Math.max(-1, Math.min(1, local.y / len))) * (180 / Math.PI);
-    const lon = (Math.atan2(-local.z, -local.x) * (180 / Math.PI) + 360) % 360 - 180;
+    // lon: must match latLonToVec3 which uses x=-sin(phi)*cos(theta), z=sin(phi)*sin(theta)
+    // so theta = atan2(z, -x), and lon = theta*(180/PI) - 180
+    const theta = Math.atan2(local.z, -local.x);
+    const lon = (theta * (180 / Math.PI) - 180 + 360) % 360 - 180;
     return { lat, lon };
   }
 
@@ -319,9 +327,13 @@ async function initGlobe() {
     const grid = currentGridRef;
     if (!grid) return null;
     const rows = grid.length, cols = grid[0].length;
-    const r = Math.floor(Math.max(0, Math.min(rows-1, (90-lat)/180*rows)));
-    const c = Math.floor(Math.max(0, Math.min(cols-1, (lon+180)/360*cols)));
-    return grid[r][c];
+    // clamp to valid range
+    const latC = Math.max(-90, Math.min(90, lat));
+    const lonC = Math.max(-180, Math.min(179.9, lon));
+    const r = Math.floor((90 - latC) / 180 * rows);
+    const c = Math.floor((lonC + 180) / 360 * cols);
+    const val = grid[Math.min(r, rows-1)][Math.min(c, cols-1)];
+    return val === undefined ? null : val;
   }
 
   // Hover tooltip
