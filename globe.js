@@ -280,12 +280,16 @@ async function initGlobe() {
   let animating = false;
 
   function flyTo(lat, lon) {
-    // Compute the globe rotation needed to face this lat/lon toward the camera
-    const phi   = (90 - lat) * (Math.PI / 180);
-    const theta = (lon + 180) * (Math.PI / 180);
-    // We want the point to face +Z (toward camera)
-    targetRotX = -(phi - Math.PI / 2);
-    targetRotY = -theta + Math.PI;
+    // To face a lat/lon toward the camera (+Z), we need to rotate the globe
+    // so that point ends up pointing at us.
+    const phi   = (90 - lat) * (Math.PI / 180);   // colatitude
+    const theta = (lon + 180) * (Math.PI / 180);   // longitude offset
+
+    // rotX tilts the globe so the latitude is centered
+    targetRotX = -(Math.PI / 2 - phi);
+    // rotY spins the globe so the longitude faces the camera
+    targetRotY = theta;
+
     targetZoom = 1.55;
     autoRotate = false;
     isZoomed = true;
@@ -354,9 +358,13 @@ async function initGlobe() {
   }
 
   function worldPointToLatLon(point) {
-    const local = globe.worldToLocal(point.clone());
+    // Convert world-space hit point into the globe's LOCAL space,
+    // which correctly undoes the current rotation.
+    const local = point.clone().applyEuler(
+      new THREE.Euler(-globe.rotation.x, -globe.rotation.y, 0, 'YXZ')
+    );
     const len = local.length();
-    const lat =  90 - Math.acos(Math.max(-1, Math.min(1, local.y / len))) * (180 / Math.PI);
+    const lat = 90 - Math.acos(Math.max(-1, Math.min(1, local.y / len))) * (180 / Math.PI);
     const lon = (Math.atan2(local.z, -local.x) * (180 / Math.PI) - 180 + 360) % 360 - 180;
     return { lat, lon };
   }
