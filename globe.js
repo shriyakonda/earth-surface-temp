@@ -203,7 +203,17 @@ async function initGlobe() {
     statsPanel.style.transform = 'translateX(0)';
   }
 
-  function hideStatsPanel() { statsPanel.style.transform = 'translateX(260px)'; }
+  function hideStatsPanel() {
+    statsPanel.style.transform = "translateX(260px)";
+    setTimeout(() => {
+      document.getElementById("sp-title").textContent  = "";
+      document.getElementById("sp-coords").textContent = "";
+      document.getElementById("sp-temp").textContent   = "";
+      document.getElementById("sp-avg").textContent    = "";
+      document.getElementById("sp-range").textContent  = "";
+      document.getElementById("sp-event").style.display = "none";
+    }, 400);
+  }
 
   function roughRegionName(lat, lon) {
     // Arctic / Greenland
