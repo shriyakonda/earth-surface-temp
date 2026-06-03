@@ -347,10 +347,9 @@ async function initGlobe() {
     const local = globe.worldToLocal(hit.point.clone());
     const len = local.length();
     const lat = 90 - Math.acos(Math.max(-1, Math.min(1, local.y / len))) * (180 / Math.PI);
-    // Verified formula: latLonToVec3 sets x=-sin(phi)*cos(theta), z=sin(phi)*sin(theta)
-    // Inverse: theta = atan2(z, -x), lon = theta*(180/PI) - 180
-    const theta = Math.atan2(local.z, -local.x);
-    const lon = theta * (180 / Math.PI) - 180;
+    const theta = Math.atan2(local.z, -local.x);           // -PI to +PI
+    const rawLon = theta * (180 / Math.PI) - 180;          // -360 to 0
+    const lon = ((rawLon + 180 + 360) % 360) - 180;        // wrap to -180..+180
     return { lat, lon };
   }
 
