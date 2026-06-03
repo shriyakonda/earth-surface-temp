@@ -280,16 +280,8 @@ async function initGlobe() {
   let animating = false;
 
   function flyTo(lat, lon) {
-    // To face a lat/lon toward the camera (+Z), we need to rotate the globe
-    // so that point ends up pointing at us.
-    const phi   = (90 - lat) * (Math.PI / 180);   // colatitude
-    const theta = (lon + 180) * (Math.PI / 180);   // longitude offset
-
-    // rotX tilts the globe so the latitude is centered
-    targetRotX = -(Math.PI / 2 - phi);
-    // rotY spins the globe so the longitude faces the camera
-    targetRotY = theta;
-
+    targetRotX = -(lat * Math.PI / 180);
+    targetRotY = -(lon * Math.PI / 180);
     targetZoom = 1.55;
     autoRotate = false;
     isZoomed = true;
@@ -358,14 +350,14 @@ async function initGlobe() {
   }
 
   function worldPointToLatLon(point) {
-    // Convert world-space hit point into the globe's LOCAL space,
-    // which correctly undoes the current rotation.
-    const local = point.clone().applyEuler(
-      new THREE.Euler(-globe.rotation.x, -globe.rotation.y, 0, 'YXZ')
-    );
+    // Undo globe rotation to get the unrotated surface point
+    const inv = new THREE.Euler(-globe.rotation.x, -globe.rotation.y, 0, "YXZ");
+    const local = point.clone().applyEuler(inv);
     const len = local.length();
+    // lat: angle from north pole
     const lat = 90 - Math.acos(Math.max(-1, Math.min(1, local.y / len))) * (180 / Math.PI);
-    const lon = (Math.atan2(local.z, -local.x) * (180 / Math.PI) - 180 + 360) % 360 - 180;
+    // lon: consistent with flyTo — direct atan2 mapping
+    const lon = -(Math.atan2(local.z, local.x) * (180 / Math.PI));
     return { lat, lon };
   }
 
@@ -539,14 +531,4 @@ function tempToColorGlobe(t) {
     b = Math.round(245 + (38-245)  * f);
   }
   return [r, g, b];
-}
-function worldPointToLatLon(point) {
-  const local = globe.worldToLocal(point.clone());
-  const len = local.length();
-  const lat = 90 - Math.acos(Math.max(-1, Math.min(1, local.y / len))) * (180 / Math.PI);
-  const lon = (Math.atan2(local.z, -local.x) * (180 / Math.PI) - 180 + 360) % 360 - 180;
-  console.log('hit point:', point);
-  console.log('local:', local);
-  console.log('computed lat/lon:', lat, lon);
-  return { lat, lon };
 }
