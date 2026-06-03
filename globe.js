@@ -389,9 +389,11 @@ async function initGlobe() {
 
   // Click → fly-to + stats
   renderer.domElement.addEventListener('click', (e) => {
-    if (isDragging) return;
-    const hit = getGlobeIntersect(e.clientX, e.clientY);
-    if (!hit) return;
+  console.log('click fired');
+  if (isDragging) { console.log('was dragging'); return; }
+  const hit = getGlobeIntersect(e.clientX, e.clientY);
+  console.log('hit:', hit);
+  console.log('hit object userData:', hit ? hit.object.userData : 'none');
 
     // If already zoomed in, reset first
     if (isZoomed) { resetView(); return; }
