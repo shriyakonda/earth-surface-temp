@@ -280,8 +280,11 @@ async function initGlobe() {
   let animating = false;
 
   function flyTo(lat, lon) {
+    const rawY = -(lon * Math.PI / 180);
+    // Find nearest equivalent angle to current rotY to avoid spinning many rotations
+    const turns = Math.round((rotY - rawY) / (2 * Math.PI));
+    targetRotY = rawY + turns * 2 * Math.PI;
     targetRotX = -(lat * Math.PI / 180);
-    targetRotY = -(lon * Math.PI / 180);
     targetZoom = 1.55;
     autoRotate = false;
     isZoomed = true;
@@ -389,11 +392,9 @@ async function initGlobe() {
 
   // Click → fly-to + stats
   renderer.domElement.addEventListener('click', (e) => {
-  console.log('click fired');
-  if (isDragging) { console.log('was dragging'); return; }
-  const hit = getGlobeIntersect(e.clientX, e.clientY);
-  console.log('hit:', hit);
-  console.log('hit object userData:', hit ? hit.object.userData : 'none');
+    if (isDragging) return;
+    const hit = getGlobeIntersect(e.clientX, e.clientY);
+    if (!hit) return;
 
     // If already zoomed in, reset first
     if (isZoomed) { resetView(); return; }
