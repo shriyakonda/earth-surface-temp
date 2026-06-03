@@ -540,3 +540,13 @@ function tempToColorGlobe(t) {
   }
   return [r, g, b];
 }
+function worldPointToLatLon(point) {
+  const local = globe.worldToLocal(point.clone());
+  const len = local.length();
+  const lat = 90 - Math.acos(Math.max(-1, Math.min(1, local.y / len))) * (180 / Math.PI);
+  const lon = (Math.atan2(local.z, -local.x) * (180 / Math.PI) - 180 + 360) % 360 - 180;
+  console.log('hit point:', point);
+  console.log('local:', local);
+  console.log('computed lat/lon:', lat, lon);
+  return { lat, lon };
+}
