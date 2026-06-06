@@ -23,7 +23,7 @@ async function initGlobe() {
   container.appendChild(renderer.domElement);
   container.style.position = 'relative';
 
-  // Starfield
+  // Starfields
   const starGeo = new THREE.BufferGeometry();
   const pos = new Float32Array(1500 * 3);
   for (let i = 0; i < pos.length; i++) pos[i] = (Math.random() - 0.5) * 200;
@@ -131,7 +131,7 @@ function addClickMarker(lat, lon) {
     new THREE.MeshBasicMaterial({ color: 0xff6b00, side: THREE.DoubleSide, transparent: true, opacity: 0.4 })
   );
   outerRing.position.copy(pos);
-  outerRing.lookAt(new THREE.Vector3(0, 0, 0));
+  outerRing.lookAt(outerRing.position.clone().multiplyScalar(2));
   outerRing.rotateY(Math.PI);
   globe.add(outerRing);
 
@@ -141,7 +141,7 @@ function addClickMarker(lat, lon) {
     new THREE.MeshBasicMaterial({ color: 0xff6b00, side: THREE.DoubleSide, transparent: true, opacity: 0.85 })
   );
   ring.position.copy(pos);
-  ring.lookAt(new THREE.Vector3(0, 0, 0));
+  ring.lookAt(ring.position.clone().multiplyScalar(2));
   ring.rotateY(Math.PI);
   globe.add(ring);
 
