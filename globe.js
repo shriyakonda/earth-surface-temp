@@ -117,14 +117,28 @@ async function initGlobe() {
   }
   buildMarkers('jul2020');
 
-  function addClickMarker(lat, lon) {
-  if (clickMarker) globe.remove(clickMarker);
+function addClickMarker(lat, lon) {
+  if (clickMarker) {
+    globe.remove(clickMarker.outerRing);
+    globe.remove(clickMarker.ring);
+    globe.remove(clickMarker.dot);
+  }
   const pos = latLonToVec3(lat, lon, 1.018);
-  
-  // Outer ring
+
+  // Outer faint ring
+  const outerRing = new THREE.Mesh(
+    new THREE.RingGeometry(0.038, 0.055, 32),
+    new THREE.MeshBasicMaterial({ color: 0xff6b00, side: THREE.DoubleSide, transparent: true, opacity: 0.4 })
+  );
+  outerRing.position.copy(pos);
+  outerRing.lookAt(new THREE.Vector3(0, 0, 0));
+  outerRing.rotateY(Math.PI);
+  globe.add(outerRing);
+
+  // Inner ring
   const ring = new THREE.Mesh(
     new THREE.RingGeometry(0.025, 0.038, 32),
-    new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide, transparent: true, opacity: 0.85 })
+    new THREE.MeshBasicMaterial({ color: 0xff6b00, side: THREE.DoubleSide, transparent: true, opacity: 0.85 })
   );
   ring.position.copy(pos);
   ring.lookAt(new THREE.Vector3(0, 0, 0));
@@ -141,7 +155,7 @@ async function initGlobe() {
   dot.rotateY(Math.PI);
   globe.add(dot);
 
-  clickMarker = { ring, dot };
+  clickMarker = { outerRing, ring, dot };
 }
 
   // ── Tooltip ────────────────────────────────────────────────
@@ -330,6 +344,7 @@ async function initGlobe() {
     hideStatsPanel();
     globeTooltip.style.display = 'none';
     if (clickMarker) {
+      globe.remove(clickMarker.outerRing);
       globe.remove(clickMarker.ring);
       globe.remove(clickMarker.dot);
       clickMarker = null;
