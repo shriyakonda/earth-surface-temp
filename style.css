@@ -77,7 +77,7 @@ h2 {
  
 .section-desc {
   font-size: 16px;
-  color: #999;
+  color: #bbb;
   margin-bottom: 20px;
   padding-left: 18px;
 }
@@ -180,7 +180,7 @@ p {
  
 .caption {
   font-size: 13px;
-  color: #fff;
+  color: #bbb;
   font-style: italic;
   line-height: 1.5;
 }
@@ -632,9 +632,13 @@ footer p {
    NARRATIVE
    ============================================================ */
 .narrative {
-  max-width: 680px;
-  margin: 0 auto 60px;
-  padding: 0 24px;
+  background: #13131e;
+  border: 1px solid #2a2a3a;
+  border-left: 4px solid #b40426;
+  border-radius: 8px;
+  padding: 28px 32px;
+  max-width: 100%;
+  margin: 0 0 80px;
 }
 
 .narrative p {
