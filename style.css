@@ -180,7 +180,7 @@ p {
  
 .caption {
   font-size: 13px;
-  color: #666;
+  color: #fff;
   font-style: italic;
   line-height: 1.5;
 }
@@ -274,14 +274,14 @@ p {
  
 .event-card-date {
   font-size: 12px;
-  color: #888;
+  color: #fff;
   margin-bottom: 2px;
   font-style: italic;
 }
  
 .event-card-region {
   font-size: 12px;
-  color: #666;
+  color: #fff;
 }
  
 .markers-layer {
@@ -626,4 +626,47 @@ footer p {
   .anomaly-controls { flex-direction: column; }
   .anomaly-arrow { padding-top: 0; transform: rotate(90deg); }
   .events-grid { grid-template-columns: 1fr; }
+}
+
+/* ============================================================
+   NARRATIVE
+   ============================================================ */
+.narrative {
+  max-width: 680px;
+  margin: 0 auto 60px;
+  padding: 0 24px;
+}
+
+.narrative p {
+  font-size: 18px;
+  line-height: 1.8;
+  color: #ccc;
+}
+
+.takeaway h2 {
+  font-size: 28px;
+  margin-bottom: 20px;
+  color: #fff;
+}
+
+.takeaway h3 {
+  font-size: 18px;
+  margin: 24px 0 12px;
+  color: #ccc;
+}
+
+.takeaway ul {
+  padding-left: 20px;
+  color: #bbb;
+  font-size: 16px;
+  line-height: 2;
+}
+
+.takeaway a {
+  color: #b40426;
+  text-decoration: none;
+}
+
+.takeaway a:hover {
+  text-decoration: underline;
 }
