@@ -4,6 +4,7 @@
 
 window.addEventListener('load', initGlobe);
 let globeSwitchDataset = null;
+let clickMarker = null;
 
 async function initGlobe() {
   const container = document.getElementById('globe-container');
@@ -115,6 +116,33 @@ async function initGlobe() {
     });
   }
   buildMarkers('jul2020');
+
+  function addClickMarker(lat, lon) {
+  if (clickMarker) globe.remove(clickMarker);
+  const pos = latLonToVec3(lat, lon, 1.018);
+  
+  // Outer ring
+  const ring = new THREE.Mesh(
+    new THREE.RingGeometry(0.025, 0.038, 32),
+    new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide, transparent: true, opacity: 0.85 })
+  );
+  ring.position.copy(pos);
+  ring.lookAt(new THREE.Vector3(0, 0, 0));
+  ring.rotateY(Math.PI);
+  globe.add(ring);
+
+  // Inner dot
+  const dot = new THREE.Mesh(
+    new THREE.CircleGeometry(0.014, 24),
+    new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide })
+  );
+  dot.position.copy(pos);
+  dot.lookAt(new THREE.Vector3(0, 0, 0));
+  dot.rotateY(Math.PI);
+  globe.add(dot);
+
+  clickMarker = { ring, dot };
+}
 
   // ── Tooltip ────────────────────────────────────────────────
   const globeTooltip = document.createElement('div');
@@ -301,6 +329,11 @@ async function initGlobe() {
     isZoomed = false;
     hideStatsPanel();
     globeTooltip.style.display = 'none';
+    if (clickMarker) {
+      globe.remove(clickMarker.ring);
+      globe.remove(clickMarker.dot);
+      clickMarker = null;
+    }
   }
 
   // ── Time period buttons ────────────────────────────────────
@@ -411,8 +444,9 @@ async function initGlobe() {
     const val = latLonToGridVal(lat, lon);
 
     flyToPoint(hit.point);
-    showStatsPanel(lat, lon, val);
     globeTooltip.style.display = 'none';
+    addClickMarker(lat, lon); 
+    showStatsPanel(lat, lon, val);
   });
 
   // Hint
