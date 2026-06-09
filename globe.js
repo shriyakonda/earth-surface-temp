@@ -117,46 +117,64 @@ async function initGlobe() {
   }
   buildMarkers('jul2020');
 
-function addClickMarker(lat, lon) {
-  if (clickMarker) {
-    globe.remove(clickMarker.outerRing);
-    globe.remove(clickMarker.ring);
-    globe.remove(clickMarker.dot);
+  function addClickMarker(lat, lon) {
+
+    // Remove old marker
+    if (clickMarker) {
+      scene.remove(clickMarker.outerRing);
+      scene.remove(clickMarker.ring);
+      scene.remove(clickMarker.dot);
+    }
+
+    // Convert clicked lat/lon to world position
+    const localPos = latLonToVec3(lat, lon, 1.025);
+    const worldPos = globe.localToWorld(localPos.clone());
+
+    // Outer translucent ring
+    const outerRing = new THREE.Mesh(
+      new THREE.RingGeometry(0.018, 0.028, 64),
+      new THREE.MeshBasicMaterial({
+        color: 0xffd54f,
+        transparent: true,
+        opacity: 0.35,
+        side: THREE.DoubleSide
+      })
+    );
+
+  // Main orange ring
+    const ring = new THREE.Mesh(
+      new THREE.RingGeometry(0.020, 0.016, 64),
+      new THREE.MeshBasicMaterial({
+        color: 0x00d4ff,
+        side: THREE.DoubleSide
+      })
+    );
+
+    // White center dot
+    const dot = new THREE.Mesh(
+      new THREE.CircleGeometry(0.006, 32),
+      new THREE.MeshBasicMaterial({
+        color: 0x00d4ff,
+        side: THREE.DoubleSide
+      })
+    );
+
+    [outerRing, ring, dot].forEach(obj => {
+      obj.position.copy(worldPos);
+
+    // face camera immediately
+      obj.quaternion.copy(camera.quaternion);
+
+      scene.add(obj);
+    });
+
+    clickMarker = {
+      outerRing,
+      ring,
+      dot
+    };
   }
-  const pos = latLonToVec3(lat, lon, 1.018);
 
-  // Outer faint ring
-  const outerRing = new THREE.Mesh(
-    new THREE.RingGeometry(0.038, 0.055, 32),
-    new THREE.MeshBasicMaterial({ color: 0xff6b00, side: THREE.DoubleSide, transparent: true, opacity: 0.4 })
-  );
-  outerRing.position.copy(pos);
-  outerRing.lookAt(outerRing.position.clone().multiplyScalar(2));
-  outerRing.rotateY(Math.PI);
-  globe.add(outerRing);
-
-  // Inner ring
-  const ring = new THREE.Mesh(
-    new THREE.RingGeometry(0.025, 0.038, 32),
-    new THREE.MeshBasicMaterial({ color: 0xff6b00, side: THREE.DoubleSide, transparent: true, opacity: 0.85 })
-  );
-  ring.position.copy(pos);
-  ring.lookAt(ring.position.clone().multiplyScalar(2));
-  ring.rotateY(Math.PI);
-  globe.add(ring);
-
-  // Inner dot
-  const dot = new THREE.Mesh(
-    new THREE.CircleGeometry(0.014, 24),
-    new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide })
-  );
-  dot.position.copy(pos);
-  dot.lookAt(new THREE.Vector3(0, 0, 0));
-  dot.rotateY(Math.PI);
-  globe.add(dot);
-
-  clickMarker = { outerRing, ring, dot };
-}
 
   // ── Tooltip ────────────────────────────────────────────────
   const globeTooltip = document.createElement('div');
@@ -344,9 +362,9 @@ function addClickMarker(lat, lon) {
     hideStatsPanel();
     globeTooltip.style.display = 'none';
     if (clickMarker) {
-      globe.remove(clickMarker.outerRing);
-      globe.remove(clickMarker.ring);
-      globe.remove(clickMarker.dot);
+      scene.remove(clickMarker.outerRing);
+      scene.remove(clickMarker.ring);
+      scene.remove(clickMarker.dot);
       clickMarker = null;
     }
   }
@@ -529,6 +547,11 @@ function addClickMarker(lat, lon) {
     _lookAt.lerp(camTargetLookAt, EASE);
     camera.lookAt(_lookAt);
 
+    if (clickMarker) {
+      clickMarker.outerRing.quaternion.copy(camera.quaternion);
+      clickMarker.ring.quaternion.copy(camera.quaternion);
+      clickMarker.dot.quaternion.copy(camera.quaternion);
+    }
     renderer.render(scene, camera);
   }
   animate();
