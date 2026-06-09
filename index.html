@@ -19,7 +19,7 @@
   <!-- INTRO -->
   <section class="intro">
     <h2>What you're looking at</h2>
-    <p>You're looking at readings from Terra, a NASA satellite that has been measuring the temperature of the Earth every month. Terra specifically measures the temperature of the ground itself — sand, rock, forest, canopy, ice — which is different from air temperature. This distinction matters because land surface temperature is what the planet is actually radiating. We can use it to predict weather, storms, and evaporation, and see things that ground stations miss entirely: the temperatures of remote stretches of desert, or scorching parking lots where no one is keeping track.</p>
+    <p>You're looking at readings from Terra, a NASA satellite that has been measuring the temperature of the ground itself — not the air, but the sand, rock, forest canopy, and asphalt every month for 21 years. Land surface temperature is what the planet is actually radiating, and it catches things that weather stations miss: the heat of remote deserts, scorching parking lots, and forests that have no one keeping track.</p>
   </section>
 
   <!-- MAIN MAP -->
@@ -49,6 +49,10 @@
     <p class="caption">Land surface temperature measured by NASA's Terra satellite (MODIS MOD11C3, 5 km resolution). Ocean and sensor-error pixels masked.</p>
   </section>
 
+  <section class="narrative">
+    <p>A single month is just a snapshot. To see whether anything has actually changed, you need to look at the moments when the heat stopped being a weather event and started becoming a body count.</p>
+  </section>
+
   <!-- EXTREME EVENTS -->
   <section class="viz-section events-section">
     <h2 class="section-title">When the Earth Burned</h2>
@@ -69,6 +73,10 @@
       <span class="legend-label">+50°C</span>
     </div>
     <p class="caption" id="event-map-caption">Select an event above to highlight it on the map.</p>
+  </section>
+
+  <section class="narrative">
+    <p>Heat events make the news. But headlines don't show you the data. Is July 2024 actually hotter than July 2003? Is a Northern Hemisphere summer hotter than a Southern one? Pick any two periods and find out.</p>
   </section>
 
   <!-- SIDE-BY-SIDE COMPARISON -->
@@ -137,6 +145,10 @@
     </div>
   </section>
 
+<section class="narrative">
+  <p>Color maps show you the full picture. But sometimes you want a single answer: where exactly has the ground gotten warmer, and by how much?</p>
+</section>
+
   <!-- ANOMALY MAP -->
   <section class="viz-section anomaly-section">
     <h2 class="section-title">How Much Has It Changed?</h2>
@@ -181,6 +193,10 @@
     <p class="caption" id="anomaly-caption"></p>
   </section>
 
+  <section class="narrative">
+    <p>Twenty-one years of heat, wrapped around a sphere. Some patterns only become obvious when you can spin the planet yourself.</p>
+  </section>
+
   <!-- GLOBE -->
   <section class="viz-section globe-section">
     <h2 class="section-title">A View From Space</h2>
@@ -189,15 +205,14 @@
     <p class="caption" style="text-align:center;margin-top:8px;">Click and drag to rotate · Scroll to zoom</p>
   </section>
 
-    <section class="writeup">
-      <h2>Project Writeup</h2>
-
-      <h3>What we've done so far</h3>
-      <p>We used NASA's MODIS MOD11C3 dataset on monthly land surface temperature with 5km resolution and converted raw values to Celsius and masked invalid pixels such as zeros, oceans, and sensor errors as NaN. We then reduced the size of the dataset from 26 million cells to 400,000 cells, and converted NaN values to JSON. We then pulled 4 time periods: July 2020, January 2020, July 2003, July 2024, and built an HTML5 canvas renderer with a blue to red color scale and added a temperature legend. Finally, we added two working interactions; the button to switch between different time periods, and a hover tooltip with temperature and coordinates.</p>
-
-      <h3>What will be the most challenging part to design</h3>
-      <p>We anticipate the most challenging part of this project will be turning a map with buttons into a real explorable explanation with a narrative driving the visualizations, instead of the visualizations driving the narrative. We also anticipate that writing substantial explanatory text to properly explain the changes and capture the reader's attention will be something that is also difficult. Additionally, we need to decide if we want to add more years, anomaly maps, and be careful of our framing while doing it. As tough as the data is here, we also need to make sure our design matches the narrative we are trying to display.</p>
-    </section>
+  <!-- WRITEUP -->
+  <section class="writeup">
+    <h2>Project Writeup</h2>
+    <h3>What we've done so far</h3>
+    <p>We used NASA's MODIS MOD11C3 dataset on monthly land surface temperature with 5km resolution and converted raw values to Celsius and masked invalid pixels such as zeros, oceans, and sensor errors as NaN. We then reduced the size of the dataset from 26 million cells to 400,000 cells, and converted NaN values to JSON. We then pulled 4 time periods: July 2020, January 2020, July 2003, July 2024, and built an HTML5 canvas renderer with a blue to red color scale and added a temperature legend. Finally, we added two working interactions: the button to switch between different time periods, and a hover tooltip with temperature and coordinates.</p>
+    <h3>What will be the most challenging part to design</h3>
+    <p>We anticipate the most challenging part of this project will be turning a map with buttons into a real explorable explanation with a narrative driving the visualizations, instead of the visualizations driving the narrative. We also anticipate that writing substantial explanatory text to properly explain the changes and capture the reader's attention will be something that is also difficult. Additionally, we need to decide if we want to add more years, anomaly maps, and be careful of our framing while doing it. As tough as the data is here, we also need to make sure our design matches the narrative we are trying to display.</p>
+  </section>
 
   </main>
 
