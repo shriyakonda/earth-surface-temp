@@ -16,16 +16,18 @@
 
 <main>
 
-  <!-- INTRO -->
+  <!-- INTRO: AND -->
   <section class="intro">
     <h2>What you're looking at</h2>
-    <p>You're looking at readings from Terra, a NASA satellite that has been measuring the temperature of the ground itself. Not the air, but the sand, rock, forest canopy, and asphalt every month for 21 years. Land surface temperature is what the planet is actually radiating, and it catches things that weather stations miss: the heat of remote deserts, scorching parking lots, and forests that have no one keeping track. And for two decades, this data has been quietly accumulating in NASA archives, mostly unread by anyone outside a research lab.</p>
+    <p>You're looking at readings from Terra, a NASA satellite that has been measuring the temperature of the ground itself. Not the air, but the sand, rock, forest canopy, and asphalt every month for 21 years. Land surface temperature is what the planet is actually radiating, and it catches things that weather stations miss: the heat of remote deserts, scorching parking lots, and forests that have no one keeping track.</p>
+    <p>Air temperature, the number you hear on the news, is taken a few feet off the ground in a shaded, ventilated box. It is a comfortable proxy for what a human body feels in the shade. Land surface temperature is the opposite. It is the raw temperature of the surface in full sun, which is why a desert floor can read 70°C while the air above it sits at a survivable 45°C. That gap is where the danger lives, and it is invisible to a thermometer in a box.</p>
+    <p>For two decades, this surface record has been quietly accumulating in NASA archives, mostly unread by anyone outside a research lab. Below, you can explore it yourself. Start with a single month.</p>
   </section>
 
   <!-- MAIN MAP -->
   <section class="viz-section">
     <h2 class="section-title">Explore the Map</h2>
-    <p class="section-desc">Select a time period to load global land surface temperature data. Hover anywhere on the map to read exact temperatures.</p>
+    <p class="section-desc">Select a time period to load global land surface temperature data. Hover anywhere on the map to read the exact temperature at that location. Warmer ground is red, cooler ground is blue. Try switching between a Northern Hemisphere summer and a Southern one and watch the heat slide across the equator.</p>
 
     <div class="controls">
       <button class="year-btn active" data-key="jul2020">July 2020</button>
@@ -48,14 +50,16 @@
     <p class="caption">Land surface temperature measured by NASA's Terra satellite (MODIS MOD11C3, 5 km resolution). Ocean and sensor-error pixels masked.</p>
   </section>
 
+  <!-- BUT -->
   <section class="narrative">
-    <p>A single month is just a snapshot. But air temperature records are collected at weather stations, which are unevenly distributed, often located near cities, and sheltered from direct sun. The ground is not sheltered. To see whether anything has actually changed, you need to look at the moments when the heat stopped being a weather event and started becoming a body count. Air temperature lagged. Ground temperature did not.</p>
+    <p>But a map of a single month is almost useless on its own. It shows you where it is hot, not whether it is getting hotter. A desert is supposed to be hot in summer; that tells you nothing about climate change. The only way to separate the signal from the seasons is to compare the same place across time, and to focus on the moments that actually broke records.</p>
+    <p>And most of this data sits unexamined: the moments that matter are not average months, they are the outliers, the summers that killed tens of thousands, the heat domes that melted power grids, the weeks that rewrote mortality records. Air temperature gets reported; ground temperature does not. Air is measured at sheltered stations that systematically undercount the heat that actually reaches human bodies, crops, and infrastructure. The ground tells a different story. To find it, you have to look at the specific moments when heat crossed from inconvenience into catastrophe.</p>
   </section>
 
   <!-- EXTREME EVENTS -->
   <section class="viz-section events-section">
     <h2 class="section-title">When the Earth Burned</h2>
-    <p class="section-desc">Click any event below to jump to that time period and see the heat signature that corresponded with extreme weather events. Every spike in temperature represents lives disrupted, displaced, or lost.</p>
+    <p class="section-desc">Click any event below to jump to that time period and see the heat signature that corresponded with extreme weather events. Every spike in temperature represents lives disrupted, displaced, or lost. These are not abstract data points. Behind each one is a hospital that filled, a crop that failed, a grid that buckled, a community that grieved.</p>
 
     <div class="events-grid" id="events-grid">
       <!-- Populated by JS -->
@@ -72,16 +76,22 @@
       <span class="legend-label">+50°C</span>
     </div>
     <p class="caption" id="event-map-caption">Select an event above to highlight it on the map.</p>
+
+    <div class="annotation-box" style="border-left:4px solid #d9534f;background:rgba(217,83,79,0.08);padding:12px 16px;margin-top:16px;border-radius:4px;line-height:1.5;">
+      <p style="margin:0;"><strong>Note:</strong> During the July 2024 heatwave, ground temperatures in parts of North Africa and the Middle East breached critical thresholds, creating severe thermal environments well before air sensors fully registered the peak. Select the July 2024 event above to see the signature.</p>
+    </div>
   </section>
 
+  <!-- bridge to comparison -->
   <section class="narrative">
-    <p>Heat events make the news for a week, then disappear. But the ground remembers. Is July 2024 actually hotter than July 2003? Is a Northern Hemisphere summer hotter than a Southern one? The data has a cleaner answer than the headlines do. Pick any two periods and find out.</p>
+    <p>Heat events make the news for a week, then disappear. But the ground remembers. The danger with single events is that any one of them can be dismissed as a freak occurrence, a bad year, weather rather than climate. The way to push past that is to put two periods next to each other and look.</p>
+    <p>Is July 2024 actually hotter than July 2003? Is a Northern Hemisphere summer hotter than a Southern one? The data has a cleaner answer than the headlines do. Pick any two periods and find out.</p>
   </section>
 
   <!-- SIDE-BY-SIDE COMPARISON -->
   <section class="viz-section compare-section">
     <h2 class="section-title">Compare Side by Side</h2>
-    <p class="section-desc">Load two time periods simultaneously and hover over either map. Both will highlight the same location so you can directly compare temperatures across time.</p>
+    <p class="section-desc">Load two time periods simultaneously and hover over either map. Both will highlight the same location so you can directly compare temperatures across time. Move your cursor slowly across a hot region and watch how the two numbers diverge, sometimes by a little, sometimes by a lot.</p>
 
     <div class="split-controls">
       <div class="split-control-group">
@@ -144,14 +154,16 @@
     </div>
   </section>
 
+  <!-- THEREFORE -->
   <section class="narrative">
-    <p>The comparison tells you what changed. But color scales make it easy to miss a degree here, two degrees there. Those small numbers are not small. The anomaly map strips away the color baseline entirely and shows only the shift itself: where the planet used to recover and no longer does, where the climate buffer has collapsed, and where the ground is simply hotter now than it was twenty years ago.</p>
+    <p>Therefore the question is not just what the colors look like side by side. Two red maps can hide a meaningful difference, because the eye is bad at judging small shifts in shade. We need to stop looking at absolute temperature and start looking at departure: not how hot it is, but how much hotter it has become.</p>
+    <p>Two degrees warmer on a color scale looks like a slightly redder pixel. In the Sahel or the Arabian Peninsula, it looks like a summer that kills. The anomaly map makes that shift impossible to miss. By subtracting one period from another, it erases everything the two months have in common and leaves only the change. It shows exactly where the ground has stopped cooling down, where the climate buffer has collapsed, and where the change is no longer a projection. It has already happened.</p>
   </section>
 
   <!-- ANOMALY MAP -->
   <section class="viz-section anomaly-section">
     <h2 class="section-title">How Much Has It Changed?</h2>
-    <p class="section-desc">The anomaly map shows the <em>difference</em> in temperature between two time periods. Red means warmer, blue means cooler. This removes the seasonal baseline and reveals where the planet has actually shifted.</p>
+    <p class="section-desc">The anomaly map shows the <em>difference</em> in temperature between two time periods. Red means warmer, blue means cooler, and white means almost no change. This removes the seasonal baseline and reveals where the planet has actually shifted. Choosing two of the same season, such as July to July, isolates long-term warming from the ordinary swing between winter and summer.</p>
 
     <div class="anomaly-controls">
       <div class="anomaly-control-group">
@@ -190,25 +202,40 @@
       <span class="legend-label">+15°C warmer</span>
     </div>
     <p class="caption" id="anomaly-caption"></p>
+
+    <div class="annotation-box" style="border-left:4px solid #d9534f;background:rgba(217,83,79,0.08);padding:12px 16px;margin-top:16px;border-radius:4px;line-height:1.5;">
+      <p style="margin:0;"><strong>Try this:</strong> Set the baseline to July 2003 and compare to July 2024. The red band across the Sahel and Arabian Peninsula marks regions where the surface has warmed by several degrees over two decades, exactly the places where outdoor labor and limited cooling make that change most dangerous.</p>
+    </div>
   </section>
 
+  <!-- bridge to globe -->
   <section class="narrative">
-    <p>The warming is not uniform. The Sahara, the Middle East, South Asia: places where people work outside, where air conditioning is not an option, where a two-degree shift in ground temperature is the difference between a hard summer and a deadly one. From space, 21 years compress into a single view. The pattern is not a line on a chart. It is geography.</p>
+    <p>The warming is not uniform. The Sahara, the Middle East, South Asia: places where people work outside, where air conditioning is not an option, where a two-degree shift in ground temperature is the difference between a hard summer and a deadly one. A flat map can make these regions feel distant from one another, separated by the edges of the projection. They are not. They are a continuous belt of heat wrapping the middle of the planet.</p>
+    <p>From space, 21 years compress into a single view. The pattern is not a line on a chart. It is geography.</p>
   </section>
 
   <!-- GLOBE -->
   <section class="viz-section globe-section">
     <h2 class="section-title">A View From Space</h2>
-    <p class="section-desc">Look at the data through a rotating globe. Drag to rotate, scroll to zoom.</p>
+    <p class="section-desc">Look at the data through a rotating globe. Drag to rotate, scroll to zoom. Spin it toward the equator and the warming belt becomes one unbroken ring, the way Terra actually sees it on every pass.</p>
     <div id="globe-container"></div>
     <p class="caption" style="text-align:center;margin-top:8px;">Click and drag to rotate · Scroll to zoom</p>
   </section>
 
+  <!-- CLOSING: payoff and call to action -->
+  <section class="intro">
+    <h2>What this means</h2>
+    <p>Ground Truth puts 21 years of surface temperature in your hands. Not as an average, not as a projection, but as the actual heat of the actual ground in the months when it mattered. The warming you can see here is already in the record, and it is concentrated in the regions least equipped to absorb it. The people most exposed to it are often the people who did the least to cause it, working outdoors in economies with little margin for a hotter world.</p>
+    <p>None of this is a forecast. It is measurement. The satellite did not model what might happen; it recorded what did. That is what makes surface temperature such an unforgiving witness. It cannot be argued with, only read.</p>
+    <p>The data was sourced from NASA's MODIS MOD11C3 dataset, monthly land surface temperature composites at 5 km resolution spanning 2003 to 2024. Raw files were converted from Kelvin to Celsius, invalid pixels were masked, and the grid was downsampled from 26 million to 400,000 cells for smooth rendering in the browser. The maps are drawn with HTML5 Canvas and the globe with Three.js, with no mapping library.</p>
+    <h3>What you can do</h3>
+    <p>Stay informed with <a href="https://climate.nasa.gov">NASA Climate</a>, which tracks these changes in real time. Support heat relief through organizations like the <a href="https://www.redcross.org">Red Cross</a>, which runs cooling centers and emergency aid during heat events. And advocate locally: urban heat hits low-income neighborhoods hardest, so cooling access and green infrastructure are policy questions, not just environmental ones.</p>
+  </section>
 
 </main>
 
 <footer>
-  <p>Data: NASA MODIS MOD11C3 · Built for DSC 106 · Spring 2026</p>
+  <p>Data: NASA MODIS MOD11C3 V061 · Accessed via NASA earthaccess library (LP DAAC) · Built for DSC 106 · Spring 2026</p>
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
