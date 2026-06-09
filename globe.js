@@ -4,7 +4,6 @@
 
 window.addEventListener('load', initGlobe);
 let globeSwitchDataset = null;
-let clickMarker = null;
 
 async function initGlobe() {
   const container = document.getElementById('globe-container');
@@ -116,65 +115,6 @@ async function initGlobe() {
     });
   }
   buildMarkers('jul2020');
-
-  function addClickMarker(lat, lon) {
-
-    // Remove old marker
-    if (clickMarker) {
-      scene.remove(clickMarker.outerRing);
-      scene.remove(clickMarker.ring);
-      scene.remove(clickMarker.dot);
-    }
-
-    // Convert clicked lat/lon to world position
-    const localPos = latLonToVec3(lat, lon, 1.025);
-    const worldPos = globe.localToWorld(localPos.clone());
-
-    // Outer translucent ring
-    const outerRing = new THREE.Mesh(
-      new THREE.RingGeometry(0.018, 0.028, 64),
-      new THREE.MeshBasicMaterial({
-        color: 0xffd54f,
-        transparent: true,
-        opacity: 0.35,
-        side: THREE.DoubleSide
-      })
-    );
-
-  // Main orange ring
-    const ring = new THREE.Mesh(
-      new THREE.RingGeometry(0.020, 0.016, 64),
-      new THREE.MeshBasicMaterial({
-        color: 0x00d4ff,
-        side: THREE.DoubleSide
-      })
-    );
-
-    // White center dot
-    const dot = new THREE.Mesh(
-      new THREE.CircleGeometry(0.006, 32),
-      new THREE.MeshBasicMaterial({
-        color: 0x00d4ff,
-        side: THREE.DoubleSide
-      })
-    );
-
-    [outerRing, ring, dot].forEach(obj => {
-      obj.position.copy(worldPos);
-
-    // face camera immediately
-      obj.quaternion.copy(camera.quaternion);
-
-      scene.add(obj);
-    });
-
-    clickMarker = {
-      outerRing,
-      ring,
-      dot
-    };
-  }
-
 
   // ── Tooltip ────────────────────────────────────────────────
   const globeTooltip = document.createElement('div');
@@ -361,12 +301,6 @@ async function initGlobe() {
     isZoomed = false;
     hideStatsPanel();
     globeTooltip.style.display = 'none';
-    if (clickMarker) {
-      scene.remove(clickMarker.outerRing);
-      scene.remove(clickMarker.ring);
-      scene.remove(clickMarker.dot);
-      clickMarker = null;
-    }
   }
 
   // ── Time period buttons ────────────────────────────────────
@@ -478,7 +412,6 @@ async function initGlobe() {
 
     flyToPoint(hit.point);
     globeTooltip.style.display = 'none';
-    addClickMarker(lat, lon); 
     showStatsPanel(lat, lon, val);
   });
 
@@ -494,6 +427,7 @@ async function initGlobe() {
   let isDragging = false;
   let lastX = 0, lastY = 0;
   let rotX = 0, rotY = 0;
+  
 
   container.addEventListener('mousedown', (e) => { isDragging=true; lastX=e.clientX; lastY=e.clientY; });
   window.addEventListener('mouseup', () => { isDragging=false; });
@@ -546,12 +480,6 @@ async function initGlobe() {
     // Smooth camera lookAt
     _lookAt.lerp(camTargetLookAt, EASE);
     camera.lookAt(_lookAt);
-
-    if (clickMarker) {
-      clickMarker.outerRing.quaternion.copy(camera.quaternion);
-      clickMarker.ring.quaternion.copy(camera.quaternion);
-      clickMarker.dot.quaternion.copy(camera.quaternion);
-    }
     renderer.render(scene, camera);
   }
   animate();
