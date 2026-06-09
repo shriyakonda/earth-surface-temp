@@ -10,7 +10,7 @@
 
 <header>
   <h1>Ground Truth</h1>
-  <p class="subtitle">21 years of watching Earth's surface temperature from space.</p>
+  <p class="subtitle">How hot is the ground beneath our feet? While air temperatures dominate the news, 21 years of NASA satellite data reveal the unshielded thermodynamic realities of a warming planet.</p>
   <p class="byline">DSC 106 Final Project · Spring 2026</p>
 </header>
 
@@ -19,7 +19,7 @@
   <!-- INTRO -->
   <section class="intro">
     <h2>What you're looking at</h2>
-    <p>You're looking at readings from Terra, a NASA satellite that has been measuring the temperature of the ground itself — not the air, but the sand, rock, forest canopy, and asphalt every month for 21 years. Land surface temperature is what the planet is actually radiating, and it catches things that weather stations miss: the heat of remote deserts, scorching parking lots, and forests that have no one keeping track.</p>
+    <p>You're looking at readings from Terra, a NASA satellite that has been measuring the temperature of the ground itself — not the air, but the sand, rock, forest canopy, and asphalt every month for 21 years. Land surface temperature is what the planet is actually radiating, and it catches things that weather stations miss: the heat of remote deserts, scorching parking lots, and forests that have no one keeping track. And for two decades, this data has been quietly accumulating in NASA archives, mostly unread by anyone outside a research lab.</p>
   </section>
 
   <!-- MAIN MAP -->
@@ -37,12 +37,11 @@
     <div class="map-container">
       <canvas id="heatmap" width="900" height="450"></canvas>
       <div id="tooltip" class="tooltip"></div>
-      <!-- Event marker popups rendered here by JS -->
       <div id="event-popup" class="event-popup hidden"></div>
     </div>
 
     <div class="legend">
-      <span class="legend-label">−25°C</span>
+      <span class="legend-label">-25°C</span>
       <div class="legend-bar"></div>
       <span class="legend-label">+50°C</span>
     </div>
@@ -50,7 +49,7 @@
   </section>
 
   <section class="narrative">
-    <p>A single month is just a snapshot. To see whether anything has actually changed, you need to look at the moments when the heat stopped being a weather event and started becoming a body count.</p>
+    <p>A single month is just a snapshot. But air temperature records are collected at weather stations, which are unevenly distributed, often located near cities, and sheltered from direct sun. The ground is not sheltered. To see whether anything has actually changed, you need to look at the moments when the heat stopped being a weather event and started becoming a body count. Air temperature lagged. Ground temperature did not.</p>
   </section>
 
   <!-- EXTREME EVENTS -->
@@ -68,7 +67,7 @@
       <div id="event-markers-layer" class="markers-layer"></div>
     </div>
     <div class="legend">
-      <span class="legend-label">−25°C</span>
+      <span class="legend-label">-25°C</span>
       <div class="legend-bar"></div>
       <span class="legend-label">+50°C</span>
     </div>
@@ -76,7 +75,7 @@
   </section>
 
   <section class="narrative">
-    <p>Heat events make the news. But headlines don't show you the data. Is July 2024 actually hotter than July 2003? Is a Northern Hemisphere summer hotter than a Southern one? Pick any two periods and find out.</p>
+    <p>Heat events make the news for a week, then disappear. But the ground remembers. Is July 2024 actually hotter than July 2003? Is a Northern Hemisphere summer hotter than a Southern one? The data has a cleaner answer than the headlines do. Pick any two periods and find out.</p>
   </section>
 
   <!-- SIDE-BY-SIDE COMPARISON -->
@@ -139,15 +138,15 @@
     </div>
 
     <div class="legend">
-      <span class="legend-label">−25°C</span>
+      <span class="legend-label">-25°C</span>
       <div class="legend-bar"></div>
       <span class="legend-label">+50°C</span>
     </div>
   </section>
 
-<section class="narrative">
-  <p>Color maps show you the full picture. But sometimes you want a single answer: where exactly has the ground gotten warmer, and by how much?</p>
-</section>
+  <section class="narrative">
+    <p>The comparison tells you what changed. But color scales make it easy to miss a degree here, two degrees there. Those small numbers are not small. Therefore, the anomaly map strips away the color baseline entirely and shows only the shift itself: where the planet used to recover and no longer does, where the climate buffer has collapsed, and where the ground is simply hotter now than it was twenty years ago.</p>
+  </section>
 
   <!-- ANOMALY MAP -->
   <section class="viz-section anomaly-section">
@@ -164,7 +163,7 @@
           <option value="jul2024">July 2024</option>
         </select>
       </div>
-      <div class="anomaly-arrow">→</div>
+      <div class="anomaly-arrow">to</div>
       <div class="anomaly-control-group">
         <label for="anomaly-compare">Compare to</label>
         <select id="anomaly-compare">
@@ -186,7 +185,7 @@
     </div>
 
     <div class="anomaly-legend">
-      <span class="legend-label">−15°C cooler</span>
+      <span class="legend-label">-15°C cooler</span>
       <div class="anomaly-legend-bar"></div>
       <span class="legend-label">+15°C warmer</span>
     </div>
@@ -194,7 +193,7 @@
   </section>
 
   <section class="narrative">
-    <p>Twenty-one years of heat, wrapped around a sphere. Some patterns only become obvious when you can spin the planet yourself.</p>
+    <p>The warming is not uniform. The Sahara, the Middle East, South Asia: places where people work outside, where air conditioning is not an option, where a two-degree shift in ground temperature is the difference between a hard summer and a deadly one. From space, 21 years compress into a single view. The pattern is not a line on a chart. It is geography.</p>
   </section>
 
   <!-- GLOBE -->
@@ -214,7 +213,7 @@
     <p>We anticipate the most challenging part of this project will be turning a map with buttons into a real explorable explanation with a narrative driving the visualizations, instead of the visualizations driving the narrative. We also anticipate that writing substantial explanatory text to properly explain the changes and capture the reader's attention will be something that is also difficult. Additionally, we need to decide if we want to add more years, anomaly maps, and be careful of our framing while doing it. As tough as the data is here, we also need to make sure our design matches the narrative we are trying to display.</p>
   </section>
 
-  </main>
+</main>
 
 <footer>
   <p>Data: NASA MODIS MOD11C3 · Built for DSC 106 · Spring 2026</p>
